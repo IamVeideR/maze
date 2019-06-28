@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="ru">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Maze</title>
+    <style>
+        body {
+            background-color: #FEFEDF;
+            max-height: 100vh;
+        }
+        .maze {
+            padding-top: 2vh;
+            width: 100%;
+            max-width: 360px;
+            margin: 0 auto;
+            box-sizing: border-box;
+        }
+        .container {
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            position: relative;
+        }
+        .cover {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 5;
+        }
+        .variant {
+            position: relative;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            box-sizing: border-box;
+            width: 32%;
+            height: 0px;
+            padding-bottom: 32%;
+            border-radius: 2%;
+            margin-bottom: 2%;
+            background-color: #008E9B;
+            transition-duration: 0.5s;
+            font-size: 20px;
+            color: #4B4453;
+            font-weight: bold;
+            text-align: center;
+            vertical-align: middle;
+            text-transform: uppercase;
+            font-family: Verdana, Geneva, Tahoma, sans-serif;
+            box-shadow: 1px 1px 2px rgba(0,0,0,0.5);
+            cursor: pointer;
+        }
+        .variant:hover {
+            background-color: #4E8397;   
+        }
+        .variant p {
+            display: flex;
+            width: 100%;
+            height: 100%;
+            position: absolute;
+            margin: 0;
+            top: 0;
+            left: 0;display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .random {
+            padding-top: 20px;
+            width: 80%;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            flex-wrap: wrap;
+        }
+        .step {
+            position: relative;
+            width: 18%;
+            height: 0px;
+            font-size: 12px;
+            color: #D5CABD;
+            font-weight: bold;
+            text-align: center;
+            vertical-align: middle;
+            text-transform: uppercase;
+            padding-bottom: 18%;
+            border-radius: 4%;
+            margin-bottom: 3%;
+            background-color: #4B4453;
+            font-family: Verdana, Geneva, Tahoma, sans-serif;
+            box-shadow: 1px 1px 2px rgba(0,0,0,0.5);
+        }
+        .step p {
+            width: 100%;
+            height: 100%;
+            position: absolute;
+            margin: 0;
+            top: 0;
+            left: 0;display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .game {
+            width: 180px;
+            border-radius: 4px;
+            margin: 20px auto 0;
+            box-sizing: border-box;
+            padding: 10px;
+            font-size: 18px;
+            color: #4B4453;
+            background-color: #FF8066;
+            font-weight: bold;
+            text-align: center;
+            text-transform: uppercase;
+            transition-duration: 0.3s;
+            font-family: Verdana, Geneva, Tahoma, sans-serif;
+            cursor: pointer;
+        }
+        .game:hover {
+            background-color: #C34A36; 
+            box-shadow: 1px 1px 2px rgba(0,0,0,0.5);
+        }
+        @media (max-width: 360px) {
+            .step {
+            font-size: 10px;
+            }
+            .variant {
+                font-size: 16px;
+            }
+        }
+    </style>
+  </head>
+  <body>
+    <div class='maze'>
+        <div class='container'>
+            <div class='cover'></div>
+            <div class='variant'><p></p></div>
+            <div class='variant'><p></p></div>
+            <div class='variant'><p></p></div>
+            <div class='variant'><p></p></div>
+            <div class='variant'><p></p></div>
+            <div class='variant'><p></p></div>
+            <div class='variant'><p></p></div>
+            <div class='variant'><p></p></div>
+            <div class='variant'><p></p></div>
+        </div>
+        <div class='random'>
+            <div class='step'><p></p></div>
+            <div class='step'><p></p></div>
+            <div class='step'><p></p></div>
+            <div class='step'><p></p></div>
+            <div class='step'><p></p></div>
+            <div class='step'><p></p></div>
+            <div class='step'><p></p></div>
+            <div class='step'><p></p></div>
+            <div class='step'><p></p></div>
+            <div class='step'><p></p></div>
+        </div>
+        <div class='game'>Begin</div>
+    </div>
+    <script type="text/javascript">
+        let button = document.getElementsByClassName('game')[0];
+        let step = document.getElementsByClassName('step');
+        let variant = document.getElementsByClassName('variant');
+        let cover = document.getElementsByClassName('cover')[0];
+        let goLeft;
+        let goRight;
+        let goUp;
+        let goDown;
+        let counter = 0;
+        let timer = 0;
+        button.onclick = () => {
+            button.style.display = 'none';
+            for (let i = 0; i < 10; i++) {
+                step[i].getElementsByTagName('p')[0].innerHTML = '';
+            }
+            for (let i = 0; i < 9; i++) {
+                variant[i].getElementsByTagName('p')[0].innerHTML = '';
+                variant[i].style.backgroundColor = '#008E9B';
+            }
+            let randomPlace = Math.abs(Math.ceil(Math.random()*9-1));
+            variant[randomPlace].style.backgroundColor = '#B39CD0';
+            variant[randomPlace].getElementsByTagName('p')[0].innerHTML = 'Start';
+            let current = randomPlace;
+            function makeSetTimeout(i) {
+                setTimeout(function() { 
+                    (current)%3 !=0 ? goLeft = true : goLeft = false;
+                        (current)%3 !=2 ? goRight = true : goRight = false;
+                        current > 2 ? goUp = true : goUp = false;
+                        current < 6 ? goDown = true : goDown = false; 
+                        let possibility = () => {
+                            let randomStep = Math.abs(Math.ceil(Math.random()*4));
+                            switch (randomStep) {
+                                case 1 :
+                                if (goLeft) {
+                                        current --; 
+                                        step[i].getElementsByTagName('p')[0].innerHTML = "left";
+                                    break;} 
+                                else {
+                                    possibility();
+                                    break;
+                                } 
+                                case 2 :
+                                    if (goRight) {
+                                        current ++; 
+                                        step[i].getElementsByTagName('p')[0].innerHTML = "right";
+                                        break;} 
+                                    else {
+                                        possibility()
+                                        break;
+                                    } 
+                                case 3 :
+                                    if (goUp) { 
+                                        current -=3;
+                                        step[i].getElementsByTagName('p')[0].innerHTML = "Up";
+                                        break;} 
+                                    else {
+                                        possibility();
+                                        break;
+                                    } 
+                                case 4 :
+                                if (goDown) {
+                                        current +=3;
+                                        step[i].getElementsByTagName('p')[0].innerHTML = "Down";
+                                    break;} 
+                                else {
+                                    possibility();
+                                    break;
+                                } 
+                            }
+                        }
+                        possibility();
+                    }, 500*(i+1));
+                }
+            for (let i = 0; i < 10; i++) {
+                makeSetTimeout(i);
+            }  
+            setTimeout(function() { 
+                cover.style.display = 'none';
+            }, 5000);
+            for (let i = 0; i < 9; i++) {
+                variant[i].onclick = () => {
+                    cover.style.display = 'block';
+                    variant[randomPlace].getElementsByTagName('p')[0].innerHTML = '';
+                    variant[randomPlace].style.backgroundColor = '#008E9B';
+                    button.innerHTML = 'Again';
+                    i == current ? (
+                        counter++,
+                        timer = 500,
+                        variant[i].style.backgroundColor = "#00C9A7",
+                        counter == 1 ? (
+                            variant[i].getElementsByTagName('p')[0].innerHTML = `Win`
+                        ) : (
+                            variant[i].getElementsByTagName('p')[0].innerHTML = `${counter} wins in a row`
+                        )
+                    ) : (
+                        counter = 0,
+                        timer = 1500,
+                        variant[i].style.backgroundColor = "#D73222",
+                        variant[i].getElementsByTagName('p')[0].innerHTML = `Defeat`,
+                        setTimeout(function() { 
+                            variant[current].style.backgroundColor = "#BEA6A0";
+                            variant[current].getElementsByTagName('p')[0].innerHTML = `Correct Answer`;
+                        }, 1000)                        
+                    )
+                    setTimeout(function() { 
+                        button.style.display = 'block';
+                    }, timer);
+                }
+            }
+        }
+    </script>
+  </body>
+</html>
